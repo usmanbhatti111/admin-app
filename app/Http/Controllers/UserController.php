@@ -18,6 +18,9 @@ use Spatie\PdfToText\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\UserRepository;
 use Illuminate\Console\Scheduling\Event;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
+
 
 class UserController extends Controller
 {
@@ -56,32 +59,73 @@ class UserController extends Controller
     public function uploadPdf(Request $request)
     {
        
-
-        // dd($request->all());
+        // $request->validate([
+        //     'file' => 'required|mimes:pdf',
+        // ]);
+    
+   
         $file = $request->file;
-       
-        // $file = $_FILES["file"]["tmp_name"]; 
-        // $content = json_decode(file_get_contents($file->path()));
-        // Parse pdf file using Parser library 
+
+        $PDFParser = new Parser();
+
         
+        $pdf = $PDFParser->parseFile($file);
+        $pages  = $pdf->getPages();
+
+        $totalPages = count($pages);
+        
+          $text = $pdf->getText();
+       
+        $string = strpbrk($text, ':');
+
+      return  $arr=explode(' ,',$string);
+
+      foreach($arr as $array)
+      {
+        return  $name= $array['email'];
+      }
+        
+
+        // $currentPage = 1;
+
+        // // Create an empty variable that will store thefinal text
+        // $text = "";
          
-        // Extract text from PDF 
-//         $fileName = str::random(40)(6).'_'.$file->getClientOriginalName();
-// dd($fileName);
-        
-       
-      
-        
-return view('pdf', compact('file'));
+        // // Loop over each page to extract the text
+        // foreach ($pages as $page) {
 
-       
-        // $text = (new ())
-        // ->setPdf($file)
-        // ->text();
-        // dd($text);
-        // return view('pdf');
+        //     // Add a HTML separator per page e.g Page 1/14
+        //     $text .= "<h3>Page $currentPage/$totalPages</h3> </br>";
+           
+        //     // Concatenate the text
+        //     $text .= $page->getText();
+           
+           
 
+        //     // Increment the page counter
+        //     $currentPage++;
+        // }
+     
+    
+    
+        $wordarray = array('Virtual','abhsdgse');
+       $pattern = implode("|",$wordarray);
+
+      if (preg_match("/($pattern)/", $text)){
+        return "Word is  found"; 	
+    }else{
+        return "Word is not found"; 	
     }
+    return view('pdf', compact('text'));
+      } 
+        
+
+//         $pos= strrpos($text,$search);
+// return $pos;
+// if ($pos !== false) {
+//    return  substr($text,$pos + 20.);
+    // prints: txt
+   
     /**
      * Show the form for creating a new resource.
      *
